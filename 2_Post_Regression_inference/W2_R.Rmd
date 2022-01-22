@@ -1,0 +1,172 @@
+---
+title: "W2_R"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+load the R package
+
+```{r}
+rm(list = ls())
+
+library(readr)
+library(dplyr)
+```
+
+## Question 2
+
+### #1. load data
+
+```{r}
+data <- read_csv("econmath.csv")
+data <- na.omit(data)
+```
+
+### #2. check the head of the table
+
+```{r}
+head(data)
+```
+
+### #3. find the min of variable "acteng", "actmth" and "colgpa".
+
+```{r}
+min(data$acteng)
+min(data$actmth)
+min(data$colgpa)
+min(data$score)
+```
+
+### #4. find the max
+
+```{r}
+max(data$acteng)
+max(data$actmth)
+max(data$colgpa)
+max(data$score)
+```
+
+### #5. find the mean
+
+```{r}
+mean(data$acteng)
+mean(data$actmth)
+mean(data$colgpa)
+mean(data$score)
+```
+
+### #6. find the sd
+
+```{r}
+sd(data$acteng)
+sd(data$actmth)
+sd(data$colgpa)
+sd(data$score)
+```
+
+### #7. estimate the OLS model: $$score = \beta_0 + \beta_1 \cdot colgpa + \beta_2 \cdot actmth + \beta_3 \cdot acteng + u$$
+```{r}
+OLS1 = lm(score ~ colgpa + actmth + acteng , data=data)
+
+summary(OLS1)
+```
+
+### #8. standardize all variables and re-estimate the OLS model: $$score = \beta_0 + \beta_1 \cdot colgpa + \beta_2 \cdot actmth + \beta_3 \cdot acteng + u$$
+```{r}
+
+data_st = select(data, score, colgpa, actmth, acteng )
+
+data_st$score  = (data_st$score  - mean(data_st$score ))/sd(data_st$score )
+data_st$colgpa = (data_st$colgpa - mean(data_st$colgpa))/sd(data_st$colgpa)
+data_st$actmth = (data_st$actmth - mean(data_st$actmth))/sd(data_st$actmth)
+data_st$acteng = (data_st$acteng - mean(data_st$acteng))/sd(data_st$acteng)
+
+OLS2 = lm(score ~ colgpa + actmth + acteng , data=data_st)
+
+summary(OLS2)
+```
+
+## Question 3
+
+### #1. load data
+
+```{r}
+data <- read_csv("hprice1.csv")
+data <- na.omit(data)
+```
+
+### #2. check the head of the table
+
+```{r}
+head(data)
+```
+
+### #3. find the min of variable "price", "sqrmtr", "lotsize" and 'bdrms'.
+
+```{r}
+min(data$price)
+min(data$sqrft)
+min(data$bdrms)
+```
+
+### #4. find the max
+
+```{r}
+max(data$price)
+max(data$sqrfg)
+max(data$bdrms)
+```
+
+### #5. find the mean
+
+```{r}
+mean(data$price)
+mean(data$sqrft)
+mean(data$bdrms)
+```
+
+### #6. find the mean
+
+```{r}
+sd(data$price)
+sd(data$sqrft)
+sd(data$bdrms)
+```
+
+### #7. estimate the OLS model: $$price = \beta_0 + \beta_1 \cdot sqrmtr + \beta_2 \cdot lotsize + \beta_3 \cdot bdrms + u$$
+```{r}
+OLS1 = lm(price ~ sqrft + bdrms , data=data)
+
+summary(OLS1)
+```
+
+### #8. standardize all variables and re-estimate the OLS model
+```{r}
+
+data_st = select(data, price, sqrft, bdrms)
+
+data_st$price = (data_st$price - mean(data_st$price))/sd(data_st$price)
+data_st$sqrft = (data_st$sqrft - mean(data_st$sqrft))/sd(data_st$sqrft)
+data_st$bdrms = (data_st$bdrms - mean(data_st$bdrms))/sd(data_st$bdrms)
+
+OLS2 = lm(price ~ sqrft + bdrms , data=data_st)
+
+summary(OLS2)
+```
+
+### #9. predict the value of the house
+```{r}
+
+new_obs <- data.frame( sqrft = 2438, bdrms = 4)
+predict(OLS1, new_obs)
+
+```
+
+### #10. compute the prediction residual if price = 300
+```{r}
+
+new_obs <- data.frame( price = 300, sqrft = 2438,  bdrms = 4)
+300 - predict(OLS1, new_obs)
+
+```
